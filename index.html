@@ -79,7 +79,7 @@
         <label for="quitDateCigarettes">Quit date (Cigarettes):</label>
         <input type="date" id="quitDateCigarettes">
 
-        <label for="cigarettesPerDay">How many cigarettes do you smoke per day?</label>
+        <label for="cigarettesPerDay">How many cigarettes did you smoke per day?</label>
         <input type="number" id="cigarettesPerDay">
 
         <label for="costPerPack">Average cost per pack (USD):</label>
@@ -91,7 +91,7 @@
         <label for="quitDateVaping">Quit date (Vaping):</label>
         <input type="date" id="quitDateVaping">
 
-        <label for="costPerWeek">On average, how much do you spend per week on vaping (USD)?</label>
+        <label for="costPerWeek">On average, how much did you spend per week on vaping (USD)?</label>
         <input type="text" id="costPerWeek" onblur="formatCurrency(this)">
     </div>
 
@@ -189,7 +189,7 @@
         const resultsText = document.getElementById('results').innerText;
         if (resultsText) {
             navigator.clipboard.writeText(resultsText);
-            alert("Results copied to clipboard!");
+            alert("Results copied to clipboard! Share this information in the EX Community to celebrate your quit!");
         } else {
             alert("Please calculate the results first.");
         }
