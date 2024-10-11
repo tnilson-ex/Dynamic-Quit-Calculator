@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quit Cigarettes and Vaping Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #00848e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006970;
+        }
+        .output {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .logo-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logo-container img {
+            width: 200px;
+        }
+        .accordion {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .panel {
+            display: none;
+            padding: 0 18px;
+            background-color: #f1f1f1;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Logo at the top -->
+<div class="logo-container">
+    <img src="logo.png" alt="Quit Calculator Logo">
+</div>
+
+<div class="container">
+    <h2>EX Quit Cigarettes and Vaping Calculator</h2>
+    
+    <!-- Product Selection with Checkboxes -->
+    <label for="productSelection">Product Used:</label><br>
+    <input type="checkbox" id="cigarettesCheckbox" onclick="toggleFields('cigarettes')"> Cigarettes / Cigars<br>
+    <input type="checkbox" id="vapingCheckbox" onclick="toggleFields('vaping')"> E-cigarettes<br>
+    
+    <!-- Cigarette Input Fields -->
+    <div id="cigarettesFields" style="display:none;">
+        <label for="quitDateCigarettes">Quit date (Cigarettes):</label>
+        <input type="date" id="quitDateCigarettes">
+
+        <label for="cigarettesPerDay">How many cigarettes do you smoke per day?</label>
+        <input type="number" id="cigarettesPerDay">
+
+        <label for="costPerPack">Cost per pack (USD):</label>
+        <input type="text" id="costPerPack" onblur="formatCurrency(this)">
+    </div>
+
+    <!-- Vaping Input Fields -->
+    <div id="vapingFields" style="display:none;">
+        <label for="quitDateVaping">Quit date (Vaping):</label>
+        <input type="date" id="quitDateVaping">
+
+        <label for="costPerWeek">How much do you spend per week on vaping (USD)?</label>
+        <input type="text" id="costPerWeek" onblur="formatCurrency(this)">
+    </div>
+
+    <button onclick="calculateResults()">Calculate</button>
+    <button onclick="resetFields()">Reset</button>
+    <button onclick="copyResults()">Copy to Clipboard</button>
+
+    <div class="output" id="results"></div>
+
+    <!-- Accordion for Explanations -->
+    <div class="accordion" onclick="toggleAccordion(this)">How We Calculate</div>
+    <div class="panel">
+        <p>We calculate “free time saved” based on the number of cigarettes avoided. Research suggests that each cigarette smoked reduces life by 11 minutes. While vaping does not have conclusive long-term data, cost savings are calculated based on the weekly expense of vaping.</p>
+    </div>
+</div>
+
+<script>
+    function formatCurrency(input) {
+        let value = input.value.replace(/[^0-9.]/g, '');
+        if (value) {
+            input.value = parseFloat(value).toFixed(2);
+        }
+    }
+
+    function toggleFields(product) {
+        if (product === 'cigarettes') {
+            document.getElementById('cigarettesFields').style.display = 
+                document.getElementById('cigarettesCheckbox').checked ? 'block' : 'none';
+        }
+        if (product === 'vaping') {
+            document.getElementById('vapingFields').style.display = 
+                document.getElementById('vapingCheckbox').checked ? 'block' : 'none';
+        }
+    }
+
+    function calculateResults() {
+        // Cigarette Calculations
+        const cigarettesPerDay = document.getElementById('cigarettesPerDay').value || 0;
+        const costPerPack = parseFloat(document.getElementById('costPerPack').value) || 0;
+        const quitDateCigarettes = document.getElementById('quitDateCigarettes').value ? new Date(document.getElementById('quitDateCigarettes').value) : null;
+
+        // Vaping Calculations
+        const costPerWeek = parseFloat(document.getElementById('costPerWeek').value) || 0;
+        const quitDateVaping = document.getElementById('quitDateVaping').value ? new Date(document.getElementById('quitDateVaping').value) : null;
+
+        const today = new Date();
+        let daysQuitCigarettes = 0, moneySavedCigarettes = 0;
+        let daysQuitVaping = 0, moneySavedVaping = 0;
+
+        if (quitDateCigarettes) {
+            daysQuitCigarettes = Math.floor((today - quitDateCigarettes) / (1000 * 60 * 60 * 24));
+            const cigarettesAvoided = cigarettesPerDay * daysQuitCigarettes;
+            const packsAvoided = cigarettesAvoided / 20;
+            moneySavedCigarettes = packsAvoided * costPerPack;
+
+            const minutesPerCig = 11;
+            const minutesSaved = cigarettesAvoided * minutesPerCig;
+            const hoursSaved = minutesSaved / 60;
+            const daysSaved = hoursSaved / 24;
+            const yearsSaved = daysSaved / 365;
+
+            document.getElementById('results').innerHTML += `
+                <p>Days since quitting (Cigarettes): ${daysQuitCigarettes.toLocaleString()}</p>
+                <p>Money saved from smoking: $${moneySavedCigarettes.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                <p>Free time saved (Cigarettes): ${Math.round(daysSaved * 100) / 100} days</p>
+            `;
+        }
+
+        if (quitDateVaping) {
+            daysQuitVaping = Math.floor((today - quitDateVaping) / (1000 * 60 * 60 * 24));
+            moneySavedVaping = (costPerWeek / 7) * daysQuitVaping;
+
+            document.getElementById('results').innerHTML += `
+                <p>Days since quitting (Vaping): ${daysQuitVaping.toLocaleString()}</p>
+                <p>Money saved from vaping: $${moneySavedVaping.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+            `;
+        }
+
+        const totalMoneySaved = moneySavedCigarettes + moneySavedVaping;
+        document.getElementById('results').innerHTML += `
+            <p>Total money saved: $${totalMoneySaved.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+        `;
+    }
+
+    function resetFields() {
+        document.getElementById('cigarettesPerDay').value = '';
+        document.getElementById('costPerPack').value = '';
+        document.getElementById('quitDateCigarettes').value = '';
+        document.getElementById('costPerWeek').value = '';
+        document.getElementById('quitDateVaping').value = '';
+        document.getElementById('results').innerHTML = '';
+    }
+
+    function copyResults() {
+        const resultsText = document.getElementById('results').innerText;
+        if (resultsText) {
+            navigator.clipboard.writeText(resultsText);
+            alert("Results copied to clipboard!");
+        } else {
+            alert("Please calculate the results first.");
+        }
+    }
+
+    function toggleAccordion(element) {
+        element.classList.toggle("active");
+        var panel = element.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
